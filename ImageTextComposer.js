@@ -12,12 +12,12 @@ class ImageTextComposer {
             const background = await Jimp.read(this.backgroundImagePath);
             const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK); // Tamaño de fuente aumentado
 
-            // Mantener el mismo ancho máximo para dividir el texto
-            const maxWidth = background.bitmap.width * 0.5; // Mantiene el 50% del ancho de la imagen
+            // Mismo procedimiento para dividir el texto
+            const maxWidth = background.bitmap.width * 0.5;
             let lines = this.splitTextIntoLines(text, font, maxWidth);
 
             const totalTextHeight = lines.reduce((total, line) => total + Jimp.measureTextHeight(font, line, maxWidth), 0);
-            let yPos = (background.bitmap.height - totalTextHeight) / 2;
+            let yPos = (background.bitmap.height - totalTextHeight) / 2 - 30; // Ajuste para dejar espacio para la firma
 
             for (let line of lines) {
                 const textWidth = Jimp.measureText(font, line);
@@ -25,6 +25,9 @@ class ImageTextComposer {
                 background.print(font, xPos, yPos, line);
                 yPos += Jimp.measureTextHeight(font, line, maxWidth);
             }
+
+            // Añadir la firma
+            this.printSignature(background, font);
 
             const buffer = await background.getBufferAsync(Jimp.MIME_PNG);
             await sharp(buffer).toFile(this.outputPath);
@@ -54,6 +57,14 @@ class ImageTextComposer {
         }
 
         return lines;
+    }
+
+    printSignature(image, font) {
+        const signature = '@barrerot';
+        const textWidth = Jimp.measureText(font, signature);
+        const xPos = (image.bitmap.width - textWidth) / 2;
+        const yPos = image.bitmap.height - 240; // Posición de la firma aún más arriba
+        image.print(font, xPos, yPos, signature);
     }
 }
 
