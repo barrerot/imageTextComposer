@@ -10,14 +10,14 @@ class ImageTextComposer {
     async createImageWithText(text) {
         try {
             const background = await Jimp.read(this.backgroundImagePath);
-            const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK); // Tamaño de fuente aumentado
+            const font = await Jimp.loadFont(Jimp.FONT_SANS_64_BLACK); // Tamaño de fuente para el texto
 
-            // Mismo procedimiento para dividir el texto
+            // Procedimiento para dividir el texto en líneas
             const maxWidth = background.bitmap.width * 0.5;
             let lines = this.splitTextIntoLines(text, font, maxWidth);
 
             const totalTextHeight = lines.reduce((total, line) => total + Jimp.measureTextHeight(font, line, maxWidth), 0);
-            let yPos = (background.bitmap.height - totalTextHeight) / 2 - 30; // Ajuste para dejar espacio para la firma
+            let yPos = (background.bitmap.height - totalTextHeight) / 2 - 30;
 
             for (let line of lines) {
                 const textWidth = Jimp.measureText(font, line);
@@ -26,8 +26,8 @@ class ImageTextComposer {
                 yPos += Jimp.measureTextHeight(font, line, maxWidth);
             }
 
-            // Añadir la firma
-            this.printSignature(background, font);
+            // Añadir la firma con fuente más pequeña
+            await this.printSignature(background);
 
             const buffer = await background.getBufferAsync(Jimp.MIME_PNG);
             await sharp(buffer).toFile(this.outputPath);
@@ -59,12 +59,13 @@ class ImageTextComposer {
         return lines;
     }
 
-    printSignature(image, font) {
+    async printSignature(image) {
         const signature = '@barrerot';
-        const textWidth = Jimp.measureText(font, signature);
+        const signatureFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK); // Fuente más pequeña para la firma
+        const textWidth = Jimp.measureText(signatureFont, signature);
         const xPos = (image.bitmap.width - textWidth) / 2;
-        const yPos = image.bitmap.height - 240; // Posición de la firma aún más arriba
-        image.print(font, xPos, yPos, signature);
+        const yPos = image.bitmap.height - 300; // Posición de la firma
+        image.print(signatureFont, xPos, yPos, signature);
     }
 }
 
