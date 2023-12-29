@@ -1,16 +1,25 @@
 {
   "name": "imagen-frase",
   "version": "1.0.0",
-  "description": "",
+  "description": "librería para crear una imagen  compuesta por un fondo y una frase sobre ella",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "image",
+    "text",
+    "text over image"
+  ],
+  "author": {
+    "name": "Carlos Barrero Martínez",
+    "email": "barrerot@gmail.com",
+    "url": "https://www.linkedin.com/in/carlos-barrero-martinez/"
+  },
   "license": "ISC",
   "dependencies": {
     "jimp": "^0.22.10",
+    "moment": "^2.30.1",
     "sharp": "^0.33.1"
   }
 }
